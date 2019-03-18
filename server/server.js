@@ -13,10 +13,20 @@ var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log('New user connected');
 
+    socket.emit('receiveNewMessage', {
+        text: "You have a new message from the server",
+        receivedAt: 15553524213,
+        receivedBy: "+91 9988989889"
+    });
+
+    socket.on('sendNewMessage', function (message) {
+        console.log("New message received from client to server", message);
+    });
 
     socket.on('disconnect', () => {
         console.log('User dropped');
     });
+    
 });
 
 app.use(express.static(publicPath));
