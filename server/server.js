@@ -13,14 +13,13 @@ var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    socket.emit('receiveNewMessage', {
-        text: "You have a new message from the server",
-        receivedAt: 15553524213,
-        receivedBy: "+91 9988989889"
-    });
-
     socket.on('sendNewMessage', function (message) {
         console.log("New message received from client to server", message);
+        io.emit('receiveNewMessage', {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        })
     });
 
     socket.on('disconnect', () => {
