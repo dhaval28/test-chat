@@ -17,8 +17,9 @@ io.on('connection', (socket) => {
 
     socket.broadcast.emit('newUserConnected', generateMessage('Admin', "New User Connected"));
 
-    socket.on('createMessage', function (message) {
+    socket.on('createMessage', (message, callback) => {
         console.log("New message received from client to server", message);
+        callback('Acknowledged by the server.');
         //This emits to each and every client in the newtwork including itself
         // io.emit('receiveNewMessage', {
         //     from: message.from,

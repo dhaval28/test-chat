@@ -19,3 +19,10 @@ socket.on('newUserConnected', function (message) {
 socket.on('welcomeMessage', function (message) {
     console.log(message);
 });
+
+socket.emit('createMessage', {
+    from: "Dhaval",
+    text: "asd",
+}, function (ack) {
+    console.log(ack, "Received by the server!");
+});
