@@ -1,7 +1,7 @@
 const path = require('path');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
-
+const {generateMessage} = require('./utils/message')
 const socketIO = require('socket.io');
 
 const express = require('express');
@@ -13,6 +13,10 @@ var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log('New user connected');
 
+    socket.emit('welcomeMessage', generateMessage('Admin', "Welcome to the Chat Room"));
+
+    socket.broadcast.emit('newUserConnected', generateMessage('Admin', "New User Connected"));
+
     socket.on('createMessage', function (message) {
         console.log("New message received from client to server", message);
         //This emits to each and every client in the newtwork including itself
@@ -22,21 +26,8 @@ io.on('connection', (socket) => {
         //     createdAt: new Date().getTime()
         // });
 
-        socket.broadcast.emit('newMessage', {
-            from: message.from,
-            text: message.text,
-            createdAt: new Date().getTime()
-        });        
-    });
-
-    socket.broadcast.emit('newUserConnected', {
-        from: "Admin",
-        text: "New User Connected"
-    });
-
-    socket.emit('welcomeMessage', {
-        from: "Admin",
-        text: "Welcome to the Chat Room"
+        //This will send the message to all other users.
+        socket.broadcast.emit('newMessage', generateMessage(message.from, message.text));        
     });
 
     socket.on('disconnect', () => {
