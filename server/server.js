@@ -1,7 +1,7 @@
 const path = require('path');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
-const {generateMessage} = require('./utils/message')
+const messageTemplates = require('./utils/message')
 const socketIO = require('socket.io');
 
 const express = require('express');
@@ -13,22 +13,29 @@ var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    socket.emit('newMessage', generateMessage('Admin', "Welcome to the Chat Room"));
-    socket.broadcast.emit('newMessage', generateMessage('Admin', "New User Connected"));
+    socket.emit('newMessage', messageTemplates.generateMessage({"from": "Admin","text": "Welcome to the Chat Room"}));
+    socket.broadcast.emit('newMessage', messageTemplates.generateMessage({"from": "Admin","text": "New User Connected"}));
 
     socket.on('createMessage', (message, callback) => {
         console.log("New message received from client to server", message);
         callback('Message Reached server.');
-        
+
         //This emits to each and every client in the newtwork including itself
-        io.emit('newMessage', generateMessage(message.from, message.text));
+        io.emit('newMessage', messageTemplates.generateMessage(message));
 
         //This will send the message to all other users.
-        // socket.broadcast.emit('newMessage', generateMessage(message.from, message.text));
+        // socket.broadcast.emit('newMessage', messageTemplates.generateMessage(message));
+    });
+
+    socket.on('createLocationMessage', (message, callback) => {
+        console.log("New Location message received from client to server", message);
+        callback('Location Message Reached server.');
+        
+        io.emit('newLocationMessage', messageTemplates.generateLocationMessage(message));
     });
 
     socket.on('disconnect', () => {
-        console.log('User dropped');
+        console.log('User disconnected');
     });
 });
 

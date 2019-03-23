@@ -3,20 +3,40 @@
 
 <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 
-<body>
-    <p>Welcome to Let's Chat</p>
+<body class="chat">
 
-    <ol id="messages">
-    </ol>
-    
-    <form id="message-form" action="">
-        <input type="text" name="messageInput" id="messageInput" placeholder="Type a message"/>
-        <button>Send</button>
-    </form>
+    <!-- Side-Panel -->
+    <div class="chat__sidebar">
+        <h3>Group Members</h3>
+        <div id="users"></div>
+    </div>
+
+    <!-- Main-Panel -->
+    <div class="chat__main">
+
+        <ol id="messages" class="chat__messages">
+        </ol>
+
+        <div class="chat__footer">
+            <form id="message-form" action="">
+                <input autofocus autocomplete="off" type="text" name="messageInput" id="messageInput" placeholder="Type a message" />
+                <button>Send</button>
+            </form>
+            <button id="sendLocationBtn">Send Location</button>
+        </div>
+
+    </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="./js/libs/jquery-3.3.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
     <script src="./js/index.js"></script>
 </body>
 
