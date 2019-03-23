@@ -13,22 +13,18 @@ var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    socket.emit('welcomeMessage', generateMessage('Admin', "Welcome to the Chat Room"));
-
-    socket.broadcast.emit('newUserConnected', generateMessage('Admin', "New User Connected"));
+    socket.emit('newMessage', generateMessage('Admin', "Welcome to the Chat Room"));
+    socket.broadcast.emit('newMessage', generateMessage('Admin', "New User Connected"));
 
     socket.on('createMessage', (message, callback) => {
         console.log("New message received from client to server", message);
-        callback('Acknowledged by the server.');
+        callback('Message Reached server.');
+        
         //This emits to each and every client in the newtwork including itself
-        // io.emit('receiveNewMessage', {
-        //     from: message.from,
-        //     text: message.text,
-        //     createdAt: new Date().getTime()
-        // });
+        io.emit('newMessage', generateMessage(message.from, message.text));
 
         //This will send the message to all other users.
-        socket.broadcast.emit('newMessage', generateMessage(message.from, message.text));        
+        // socket.broadcast.emit('newMessage', generateMessage(message.from, message.text));
     });
 
     socket.on('disconnect', () => {

@@ -10,6 +10,7 @@ socket.on('disconnect', function () {
 
 socket.on('newMessage', function (message) {
     console.log('New message received', message);
+    $('#messages').append('<li>'+ message.from + ': ' + message.text + '</li>');
 });
 
 socket.on('newUserConnected', function (message) {
@@ -20,9 +21,12 @@ socket.on('welcomeMessage', function (message) {
     console.log(message);
 });
 
-socket.emit('createMessage', {
-    from: "Dhaval",
-    text: "asd",
-}, function (ack) {
-    console.log(ack, "Received by the server!");
+$('#message-form').on('submit', function(e) {
+    e.preventDefault();
+    socket.emit('createMessage', {
+        from: "User1",
+        text: $('#messageInput').val()
+    }, function(ack) {
+        console.log(ack);
+    });
 });
