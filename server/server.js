@@ -43,8 +43,13 @@ io.on('connection', (socket) => {
         console.log("New message received from client to server", message);
         callback('Message Reached server.');
 
-        //This emits to each and every client in the newtwork including itself
-        io.emit('newMessage', messageTemplates.generateMessage(message));
+        let user = userInstance.getUser(socket.id);
+
+        if (user && validations.isRealString(message.text)) {
+            message.from = user.name;
+            //This emits to each and every client in the newtwork including itself
+            io.to(user.room).emit('newMessage', messageTemplates.generateMessage(message));
+        }
 
         //This will send the message to all other users.
         // socket.broadcast.emit('newMessage', messageTemplates.generateMessage(message));
@@ -53,8 +58,14 @@ io.on('connection', (socket) => {
     socket.on('createLocationMessage', (message, callback) => {
         console.log("New Location message received from client to server", message);
         callback('Location Message Reached server.');
+        let user = userInstance.getUser(socket.id);
 
-        io.emit('newLocationMessage', messageTemplates.generateLocationMessage(message));
+        if (user) {
+            message.from = user.name;
+            
+            //This emits to each and every client in the newtwork including itself
+            io.to(user.room).emit('newLocationMessage', messageTemplates.generateLocationMessage(message));
+        }
     });
 
     socket.on('disconnect', () => {
@@ -63,8 +74,8 @@ io.on('connection', (socket) => {
 
         if (user) {
             io.to(user.room).emit('updateUserList', userInstance.getUserList(user.room));
-            io.to(user.room).emit('newMessage', messageTemplates.generateMessage({ from: 'Admin', text: user.name + ' left.'}));
-}
+            io.to(user.room).emit('newMessage', messageTemplates.generateMessage({ from: 'Admin', text: user.name + ' left.' }));
+        }
     });
 });
 

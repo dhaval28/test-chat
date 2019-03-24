@@ -64,7 +64,6 @@ socket.on('welcomeMessage', function (message) {
 $('#message-form').on('submit', function (e) {
     e.preventDefault();
     socket.emit('createMessage', {
-        from: "User1",
         text: $('#message-input').val()
     }, function (ack) {
         console.log(ack);
@@ -86,7 +85,6 @@ sendLocationBtn.on('click', function () {
         console.log(position);
         sendLocationBtn.removeAttr('disabled').text('Send Location');        
         socket.emit('createLocationMessage', {
-            from: "User1",
             text: {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
