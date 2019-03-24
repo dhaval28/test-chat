@@ -1,10 +1,11 @@
+var moment = require('moment');
 const messageTemplates = {};
 
 messageTemplates.generateMessage = (message) => {
     return {
         "from": message.from,
         "text": message.text,
-        "createdAt": new Date().getTime()
+        "createdAt": moment().valueOf()
     };
 }
 
@@ -16,7 +17,7 @@ messageTemplates.generateLocationMessage = (message) => {
             "latitude": message.text.latitude,
             "longitude": message.text.longitude
         },
-        "createdAt": new Date().getTime()
+        "createdAt": moment().valueOf()
     };
 }
 

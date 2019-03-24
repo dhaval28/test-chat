@@ -1,3 +1,4 @@
+
 let socket = io();
 
 socket.on('connect', function () {
@@ -10,12 +11,13 @@ socket.on('disconnect', function () {
 
 socket.on('newMessage', function (message) {
     console.log('New message received', message);
-    $('#messages').append('<li>' + message.from + ': ' + message.text + '</li>');
+
+    $('#messages').append('<li>' + message.from + ': ' + message.text + ' ' + moment(message.createdAt).format('h:mm a') + '</li>');
 });
 
 socket.on('newLocationMessage', function (message) {
     console.log('New Location message received', message);
-    $('#messages').append('<li>' + message.from + ': ' + '<a target="_blank" href="' + message.url + '">View Location</a></li>');
+    $('#messages').append('<li>' + message.from + ': ' + '<a target="_blank" href="' + message.url + '">View Location</a>' +  ' ' + moment(message.createdAt).format('h:mm a') + '</li>');
 });
 
 socket.on('newUserConnected', function (message) {
