@@ -11,13 +11,27 @@ socket.on('disconnect', function () {
 
 socket.on('newMessage', function (message) {
     console.log('New message received', message);
+    let template = $('#message-template').html();
+    let html = Mustache.render(template, {
+        text: message.text,
+        from: message.from,
+        createdAt: moment(message.createdAt).format('h:mm a')
+    });
 
-    $('#messages').append('<li>' + message.from + ': ' + message.text + ' ' + moment(message.createdAt).format('h:mm a') + '</li>');
+    $('#messages').append(html);
 });
 
 socket.on('newLocationMessage', function (message) {
     console.log('New Location message received', message);
-    $('#messages').append('<li>' + message.from + ': ' + '<a target="_blank" href="' + message.url + '">View Location</a>' +  ' ' + moment(message.createdAt).format('h:mm a') + '</li>');
+    let template = $('#location-message-template').html();
+    let html = Mustache.render(template, {
+        text: message.text,
+        from: message.from,
+        url: message.url,
+        createdAt: moment(message.createdAt).format('h:mm a')
+    });
+
+    $('#messages').append(html);
 });
 
 socket.on('newUserConnected', function (message) {
@@ -33,10 +47,10 @@ $('#message-form').on('submit', function (e) {
     e.preventDefault();
     socket.emit('createMessage', {
         from: "User1",
-        text: $('#messageInput').val()
+        text: $('#message-input').val()
     }, function (ack) {
         console.log(ack);
-        $('#messageInput').val('');
+        $('#message-input').val('');
     });
 });
 
