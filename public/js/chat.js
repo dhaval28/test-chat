@@ -96,6 +96,7 @@ sendLocationBtn.on('click', function () {
         });
     }, function () {
         alert('Something went wrong. Unable to fetch location.');
+        sendLocationBtn.removeAttr('disabled').text('Send Location');
     });
 });
 
