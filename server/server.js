@@ -1,27 +1,40 @@
 const path = require('path');
+const socketIO = require('socket.io');
+const express = require('express');
+const http = require('http');
+
 const publicPath = path.join(__dirname, '../public');
-const port = process.env.PORT || 3000;
 const messageTemplates = require('./utils/message');
 const validations = require('./utils/validation');
-const socketIO = require('socket.io');
+const { User } = require('./utils/users');
 
-const express = require('express');
+const port = process.env.PORT || 3000;
+
 var app = express();
-
-const http = require('http');
 var server = http.createServer(app);
 var io = socketIO(server);
-
+var userInstance = new User();
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    socket.emit('newMessage', messageTemplates.generateMessage({"from": "Admin","text": "Welcome to the Chat Room"}));
-    socket.broadcast.emit('newMessage', messageTemplates.generateMessage({"from": "Admin","text": "New User Connected"}));
-
     socket.on('join', (params, callback) => {
-        if (validations.isRealString(params.name) || !validations.isRealString(params.room)) {
+        if (!validations.isRealString(params.name) || !validations.isRealString(params.room)) {
             callback('Name and Room required');
+            return;
         }
+
+        //To leave a group
+        // socket.leave(params.room);
+
+        //join method accepts a string and creates a room
+        socket.join(params.room);
+        userInstance.removeUser(socket.id);
+        userInstance.addUser(socket.id, params.name, params.room);
+
+        io.to(params.room).emit('updateUserList', userInstance.getUserList(params.room));
+        socket.emit('newMessage', messageTemplates.generateMessage({ from: "Admin", text: "Welcome to the Chat Room" }));
+        //'to' method will specify to whom the event should be emitted. In this case, users of params.room
+        socket.broadcast.to(params.room).emit('newMessage', messageTemplates.generateMessage({ from: "Admin", text: params.name + " Connected." }));
 
         callback();
     });
@@ -40,12 +53,18 @@ io.on('connection', (socket) => {
     socket.on('createLocationMessage', (message, callback) => {
         console.log("New Location message received from client to server", message);
         callback('Location Message Reached server.');
-        
+
         io.emit('newLocationMessage', messageTemplates.generateLocationMessage(message));
     });
 
     socket.on('disconnect', () => {
         console.log('User disconnected');
+        let user = userInstance.removeUser(socket.id);
+
+        if (user) {
+            io.to(user.room).emit('updateUserList', userInstance.getUserList(user.room));
+            io.to(user.room).emit('newMessage', messageTemplates.generateMessage({ from: 'Admin', text: user.name + ' left.'}));
+}
     });
 });
 

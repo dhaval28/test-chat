@@ -10,15 +10,20 @@ socket.on('connect', function () {
             alert(err);
             window.location.href = '/';
         }
-        else {
-            console.log('No Error');
-        }
     });
 });
 
 socket.on('disconnect', function () {
     console.log('Disconnected from server');
 });
+
+socket.on('updateUserList', function(usersList) {
+    console.log(usersList);
+    $('#users-list').empty();
+    usersList.forEach(function(user) {
+        $('#users-list').append($('<li></li>').text(user));
+    })
+})
 
 socket.on('newMessage', function (message) {
     console.log('New message received', message);
@@ -108,7 +113,6 @@ function scrollToBottom () {
     let lastMessageHeight = newMessage.prev().innerHeight();
 
     if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
-        console.log('pls scroll');
         messages.scrollTop(scrollHeight);
     }
 }
